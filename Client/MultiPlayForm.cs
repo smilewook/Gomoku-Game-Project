@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class SinglePlayForm : Form
+    public partial class MultiPlayForm : Form
     {
         private const int rectSize = 33; // 오목판의 셀 크기
         private const int edgeCount = 15; // 오목판의 선 개수
@@ -20,15 +20,16 @@ namespace Client
         private Horse nowPlayer = Horse.BLACK;
         private bool playing = false;
 
-        public SinglePlayForm()
+        public MultiPlayForm()
         {
             InitializeComponent();
+            this.playButton.Enabled = false;
         }
 
         // 승리 판정 함수
         private bool judge()
         {
-            for(int i = 0; i < edgeCount - 4; i++) // 가로
+            for (int i = 0; i < edgeCount - 4; i++) // 가로
             {
                 for (int j = 0; j < edgeCount; j++)
                 {
@@ -70,7 +71,7 @@ namespace Client
         private void refresh()
         {
             this.boardPicture.Refresh();
-            for(int i = 0; i < edgeCount; i++)
+            for (int i = 0; i < edgeCount; i++)
             {
                 for (int j = 0; j < edgeCount; j++)
                 {
@@ -79,11 +80,11 @@ namespace Client
             }
         }
 
-        
+
 
         private void boardPicture_MouseDown(object sender, MouseEventArgs e)
         {
-            if(!playing)
+            if (!playing)
             {
                 MessageBox.Show("게임을 실행해주세요.");
                 return;
@@ -93,7 +94,7 @@ namespace Client
             int x = e.X / rectSize;
             int y = e.Y / rectSize;
             // 셀의 위치 0 ~ 14
-            if(x < 0 || y < 0 || x >= edgeCount || y >= edgeCount)
+            if (x < 0 || y < 0 || x >= edgeCount || y >= edgeCount)
             {
                 MessageBox.Show("테두리를 벗어날 수 없습니다.");
                 return;
@@ -102,8 +103,8 @@ namespace Client
             if (board[x, y] != Horse.none)
                 return;
             board[x, y] = nowPlayer;
-            
-            if(nowPlayer == Horse.BLACK)
+
+            if (nowPlayer == Horse.BLACK)
             {
                 SolidBrush brush = new SolidBrush(Color.Black);
                 g.FillEllipse(brush, x * rectSize, y * rectSize, rectSize, rectSize);
@@ -114,7 +115,7 @@ namespace Client
                 g.FillEllipse(brush, x * rectSize, y * rectSize, rectSize, rectSize);
             }
 
-            if(judge())
+            if (judge())
             {
                 status.Text = nowPlayer.ToString() + "플레이어가 승리했습니다.";
                 playing = false;
@@ -124,22 +125,6 @@ namespace Client
             {
                 nowPlayer = ((nowPlayer == Horse.BLACK) ? Horse.WHITE : Horse.BLACK);
                 status.Text = nowPlayer.ToString() + " 플레이어의 차례입니다.";
-            }
-        }        
-
-        private void playButton_Click(object sender, EventArgs e)
-        {
-            if(!playing)
-            {
-                refresh();
-                playing = true;
-                playButton.Text = "재시작";
-                status.Text = nowPlayer.ToString() + " 플레이어의 차례입니다.";
-            }
-            else
-            {
-                refresh();
-                status.Text = "게임이 재시작되었습니다.";
             }
         }
 
@@ -158,6 +143,29 @@ namespace Client
             {
                 gp.DrawLine(p, rectSize / 2, i, rectSize * edgeCount - rectSize / 2, i);
                 gp.DrawLine(p, i, rectSize / 2, i, rectSize * edgeCount - rectSize / 2);
+            }
+        }
+
+        private void enterButton_Click(object sender, EventArgs e)
+        {
+            this.enterButton.Enabled = false;
+            this.playButton.Enabled = true;
+            this.status.Text = "[" + this.roomTextBox.Text + "]번 방에 접속했습니다.";
+        }
+
+        private void playButton_Click(object sender, EventArgs e)
+        {
+            if (!playing)
+            {
+                refresh();
+                playing = true;
+                playButton.Text = "재시작";
+                status.Text = nowPlayer.ToString() + " 플레이어의 차례입니다.";
+            }
+            else
+            {
+                refresh();
+                status.Text = "게임이 재시작되었습니다.";
             }
         }
     }
